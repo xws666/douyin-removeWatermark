@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>短视频无水印下载</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      text-align: center;
+    }
+
+    input,
+    button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+
+    #video-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #music-container {
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>抖音短视频无水印下载</h1>
+  <label for="video-link">请输入视频链接：</label>
+  <input type="text" id="video-link" placeholder="例如：https://v.douyin.com/ifRGtcqY/">
+  <button onclick="parseVideo()">开始解析</button>
+
+  <div id="video-container">
+    <video id="video-player" controls width="100%" style="max-width: 500px;"></video>
+    <br>
+    <audio id="music-player" controls style="margin-top: 20px; max-width: 500px;width: 100%;"></audio>
+  </div>
+
+  <div id="music-container">
+    <button onclick="copyLink('video')">复制视频链接</button>
+    <button onclick="copyLink('music')">复制音乐链接</button>
+  </div>
+
+  <script>
+    function parseVideo() {
+      const videoLink = document.getElementById('video-link').value;
+
+      // 验证输入链接是否为空
+      if (!videoLink) {
+        alert("请输入视频链接！");
+        return;
+      }
+
+      // 模拟API请求
+      const token = 'uuic-qackd-fga-test';
+      const url = 'https://proxy.layzz.cn/lyz/platAnalyse/';
+      const params = new URLSearchParams();
+      params.append('token', token);
+      params.append('link', videoLink);
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.code === '0001') {
+            const playAddr = data.data.playAddr;
+            const musicLink = data.data.music;
+            const coverLink = data.data.cover;
+
+            // 显示视频
+            const videoPlayer = document.getElementById('video-player');
+            videoPlayer.src = playAddr;
+            videoPlayer.style.display = 'block';
+
+            // 显示音乐
+            const musicPlayer = document.getElementById('music-player');
+            musicPlayer.src = musicLink;
+            musicPlayer.style.display = 'block';
+
+            // 显示按钮
+            const videoContainer = document.getElementById('video-container');
+            videoContainer.style.display = 'block';
+            const musicContainer = document.getElementById('music-container');
+            musicContainer.style.display = 'block';
+
+            // 提供按钮功能
+            window.copyLink = function (type) {
+              let url = type === 'video' ? playAddr : musicLink;
+              navigator.clipboard.writeText(url).then(() => {
+                alert(type === 'video' ? '视频链接已复制！' : '音乐链接已复制！');
+              });
+            };
+          } else {
+            alert("解析失败，请检查视频链接！");
+          }
+        })
+        .catch(error => {
+          alert("请求失败，请稍后再试！");
+        });
+    }
+  </script>
+</body>
+
+</html>
